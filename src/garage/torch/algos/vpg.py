@@ -474,9 +474,31 @@ class VPG(RLAlgorithm):
             pad_to_last(path['rewards'], total_length=self.max_path_length)
             for path in paths
         ])
+
+
+
+
+
+        v = self._value_function.forward(
+                    np.ndarray([paths[0]['observations'][-1]]))
+        paths[0]['rewards'][-1] = v
+
+
+        r_sci = tu.discount_cumsum(paths[0]['rewards'], self.discount)
+
+        a = np.zeros_like(paths[0]['rewards'])
+        r = v.copy()
+
+        for idx in reversed(range(len(paths[0]['rewards']) - 1)):
+            a[idx] = paths[0]['rewards'][idx] + self.discount*r
+            r = a[idx]
+
+        print(a)
+        print(r_sci)
+        assert False
+
         returns = torch.stack([
-            pad_to_last(tu.discount_cumsum(path['rewards'],
-                                           self.discount).copy(),
+            pad_to_last(r_sci.copy(),
                         total_length=self.max_path_length) for path in paths
         ])
         with torch.no_grad():
