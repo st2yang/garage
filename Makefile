@@ -196,12 +196,10 @@ run-nvidia: CONTAINER_NAME ?= ''
 run-nvidia: user ?= $$USER
 run-nvidia: GPUS ?= "all"
 run-nvidia: ensure-data-path-exists build-nvidia
-	xhost +local:docker
 	docker run \
-		-it \
+		-d \
 		--rm \
 		--gpus $(GPUS) \
-		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-v $(DATA_PATH)/$(CONTAINER_NAME):/home/$(user)/code/garage/data \
 		-e DISPLAY=$(DISPLAY) \
 		-e QT_X11_NO_MITSHM=1 \
